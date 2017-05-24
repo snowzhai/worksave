@@ -1,20 +1,27 @@
 package com.android.znh.worksave.lambda;
 
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.znh.worksave.BaseActivity;
 import com.android.znh.worksave.R;
 
 import rx.Observable;
 import rx.Observer;
 import rx.Producer;
 import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action0;
 import rx.functions.Action1;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 /**
  * author:  znh
@@ -32,16 +39,50 @@ API 介绍和原理简析——
             1) 创建 Observer
             2) 创建 Observable
             3) Subscribe (订阅)
+    3. 线程控制 —— Scheduler
+     Observable.from(names)
+                .subscribeOn(Schedulers.io()) // 指定 subscribe() 发生在 IO 线程
+                .observeOn(AndroidSchedulers.mainThread()) // 指定 Subscriber 的回调发生在主线程
+    4. 变换
 * */
-public class RxJavaActivity extends AppCompatActivity {
+public class RxJavaActivity extends BaseActivity {
 
     private String tag;
+    private TextView tv_rx_show;
+    private Button btn_rx_shownumber;
+    private Button btn_rx_changeimage;
+    String finalname="";
+    private ImageView img_rx_show;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rx_java);
         tag = getPackageName();
+
+        tv_rx_show = (TextView) findViewById(R.id.tv_rx_show);
+        btn_rx_shownumber = (Button) findViewById(R.id.btn_rx_shownumber);
+        btn_rx_shownumber.setOnClickListener(this);
+        btn_rx_changeimage = (Button) findViewById(R.id.btn_rx_changeimage);
+        btn_rx_changeimage.setOnClickListener(this);
+
+    }
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.btn_rx_shownumber:
+                Log.i(tag,"printzifu");
+                printzifu();
+                break;
+            case R.id.btn_rx_changeimage:
+                changepic();
+                break;
+        }
+    }
+
+    //实例
+    public void functionone(){
         //1) 创建 Observer
         Observer<String> observer = new Observer<String>() {
 
@@ -112,7 +153,6 @@ public class RxJavaActivity extends AppCompatActivity {
         // 或者：
         observable.subscribe(stringSubscriber);
 
-
         //除了 subscribe(Observer) 和 subscribe(Subscriber) ，subscribe() 还支持不完整定义的回调，RxJava 会自动根据定义创建出 Subscriber 。形式如下：
         Action1<String> onNextAction = new Action1<String>() {
             @Override
@@ -147,41 +187,153 @@ public class RxJavaActivity extends AppCompatActivity {
         // 和 onError(error) 打包起来传入 subscribe() 以实现不完整定义的回调。事实上，虽然 Action0 和 Action1 在 API 中使用最广泛，
         // 但 RxJava 是提供了多个 ActionX 形式的接口 (例如 Action2, Action3) 的，它们可以被用以包装不同的无返回值的方法。
 
+    }
+
+    //打印字符串
+    public void printzifu(){
+
+//        Schedulers.immediate(): 直接在当前线程运行，相当于不指定线程。这是默认的 Scheduler。
+//        Schedulers.newThread(): 总是启用新线程，并在新线程执行操作。
+//        Schedulers.io(): I/O 操作（读写文件、读写数据库、网络信息交互等）所使用的 Scheduler。行为模式和 newThread() 差不多，区别在于 io() 的内部实现是是用一个无数量上限的线程池，可以重用空闲的线程，因此多数情况下 io() 比 newThread() 更有效率。不要把计算工作放在 io() 中，可以避免创建不必要的线程。
+//        Schedulers.computation(): 计算所使用的 Scheduler。这个计算指的是 CPU 密集型计算，即不会被 I/O 等操作限制性能的操作，例如图形的计算。这个 Scheduler 使用的固定的线程池，大小为 CPU 核数。不要把 I/O 操作放在 computation() 中，否则 I/O 操作的等待时间会浪费 CPU。
+//        另外， Android 还有一个专用的 AndroidSchedulers.mainThread()，它指定的操作将在 Android 主线程运行。
+
         //a. 打印字符串数组
-        //将字符串数组 names 中的所有字符串依次打印出来：
-        String[] names ={"1","2","3","4","5","6","7","8"};
+        //将字符串数组 names 中的所有字符相加串依次打印出来：
+        String[] names ={"1","2","3","4","5","6","7","8","9","10","11"};
         Observable.from(names)
+                .subscribeOn(Schedulers.io()) // 指定 subscribe() 发生在 IO 线程
+                .observeOn(AndroidSchedulers.mainThread()) // 指定 Subscriber 的回调发生在主线程
                 .subscribe(new Action1<String>() {
                     @Override
                     public void call(String name) {
-                        Log.d(tag, name);
+                        Log.i(tag, name);
+                        finalname+=name;
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+
+                    }
+                }, new Action0() {
+                    @Override
+                    public void call() {
+                        tv_rx_show.setText(finalname);
                     }
                 });
+    }
+    //利用异步线程 更换图片
+    private void changepic() {
         //b. 由 id 取得图片并显示
         //由指定的一个 drawable 文件 id drawableRes 取得图片，并显示在 ImageView 中，并在出现异常的时候打印 Toast 报错：
-        int drawableRes = R.mipmap.ic_launcher;
-        ImageView imageView = (ImageView) findViewById(R.id.img_rx_show);
+        img_rx_show = (ImageView) findViewById(R.id.img_rx_show);
         Observable.create(new Observable.OnSubscribe<Drawable>() {
             @Override
             public void call(Subscriber<? super Drawable> subscriber) {
-                Drawable drawable = getResources().getDrawable(drawableRes);
+                Drawable drawable = getResources().getDrawable(R.mipmap.woailuo);
                 subscriber.onNext(drawable);
                 subscriber.onCompleted();
             }
-        }).subscribe(new Observer<Drawable>() {
-            @Override
-            public void onNext(Drawable drawable) {
-                imageView.setImageDrawable(drawable);
-            }
+        }).subscribeOn(Schedulers.io()) // 指定 subscribe() 发生在 IO 线程
+                .observeOn(AndroidSchedulers.mainThread()) // 指定 Subscriber 的回调发生在主线程
+                .subscribe(new Observer<Drawable>() {
+                    @Override
+                    public void onNext(Drawable drawable) {
+                        img_rx_show.setImageDrawable(drawable);
+                    }
 
-            @Override
-            public void onCompleted() {
-            }
+                    @Override
+                    public void onCompleted() {
+                        Toast.makeText(RxJavaActivity.this,"完事了", Toast.LENGTH_SHORT).show();;
+                    }
 
-            @Override
-            public void onError(Throwable e) {
-                Toast.makeText(getApplicationContext(), "Error!", Toast.LENGTH_SHORT).show();
-            }
+                    @Override
+                    public void onError(Throwable e) {
+                        Toast.makeText(getApplicationContext(), "Error!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+
+    //变换  输入一个字符串  输出一个bitmap
+    public void change(){
+//        1) API
+//        首先看一个 map() 的例子：
+
+        Observable.just("images/logo.png")
+                .map(new Func1<String, Bitmap>() {
+                    @Override
+                    public Bitmap call(String s) {
+                        return getBitmapFromPath(s);
+                    }
+                })
+                .subscribe(new Action1<Bitmap>() {
+                    @Override
+                    public void call(Bitmap bitmap) {
+                        showbitmap(bitmap);
+                    }
         });
     }
+    public void showbitmap( Bitmap bitmap) {
+        img_rx_show.setImageBitmap(bitmap);
+    }
+    public Bitmap getBitmapFromPath(String s) {
+        Bitmap bmp = Bitmap.createBitmap(null);
+        return bmp;
+    }
+
+//    public String changstudent(){
+//        Student[] students = ...;
+//        Subscriber<String> subscriber = new Subscriber<String>() {
+//            @Override
+//            public void onNext(String name) {
+//                Log.d(tag, name);
+//            }
+//    ...
+//        };
+//        Observable.from(students)
+//                .map(new Func1<Student, String>() {
+//                    @Override
+//                    public String call(Student student) {
+//                        return student.getName();
+//                    }
+//                })
+//                .subscribe(subscriber);
+//
+//
+//
+//        Student[] students = ...;
+//        Subscriber<Course> subscriber = new Subscriber<Course>() {
+//            @Override
+//            public void onNext(Course course) {
+//                Log.d(tag, course.getName());
+//            }
+//    ...
+//        };
+//        Observable.from(students)
+//                .flatMap(new Func1<Student, Observable<Course>>() {
+//                    @Override
+//                    public Observable<Course> call(Student student) {
+//                        return Observable.from(student.getCourses());
+//                    }
+//                })
+//                .subscribe(subscriber);
+//
+//
+//        Student[] students = ...;
+//        Subscriber<Student> subscriber = new Subscriber<Student>() {
+//            @Override
+//            public void onNext(Student student) {
+//                List<Course> courses = student.getCourses();
+//                for (int i = 0; i < courses.size(); i++) {
+//                    Course course = courses.get(i);
+//                    Log.d(tag, course.getName());
+//                }
+//            }
+//    ...
+//        };
+//        Observable.from(students)
+//                .subscribe(subscriber);
+//    }
+
 }

@@ -1,11 +1,11 @@
 package com.android.znh.worksave.lambda;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.android.znh.worksave.BaseActivity;
 import com.android.znh.worksave.R;
 
 /**
@@ -13,7 +13,7 @@ import com.android.znh.worksave.R;
  * time:2017年5月17日
  * description：jdk1.8新特性之lambda表达式及在Android Studio中的使用举例
  */
-public class LambdaActivity extends AppCompatActivity {
+public class LambdaActivity extends BaseActivity {
 
     private View btn_lam_an;
     private View btn_lam_antwo;
