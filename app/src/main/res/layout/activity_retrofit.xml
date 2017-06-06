@@ -4,16 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.android.znh.worksave.priactice.LambdaActivity">
+    android:orientation="vertical"
+    tools:context="com.android.znh.worksave.priactice.Retrofit.RetrofitActivity">
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/btn_lam_an"
-        android:text="按钮"/>
-    <Button
+        android:id="@+id/btn_retro_getdata"
+        android:text="获取数据"/>
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/btn_lam_antwo"
-        android:text="按钮"/>
+        android:id="@+id/tv_retro_showdata"
+        />
 </LinearLayout>

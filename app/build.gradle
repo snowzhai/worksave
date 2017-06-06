@@ -24,7 +24,7 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
@@ -34,4 +34,7 @@ dependencies {
     // RxJava 依赖包
     compile 'io.reactivex:rxjava:1.0.14'
     compile 'io.reactivex:rxandroid:1.0.1'
+    //retrofit 网络访问依赖框架
+    compile 'com.squareup.retrofit2:retrofit:2.3.0'
+    compile 'com.google.code.gson:gson:2.8.1'
 }

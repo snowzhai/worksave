@@ -1,4 +1,4 @@
-package com.android.znh.worksave.lambda;
+package com.android.znh.worksave.priactice;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -32,6 +32,9 @@ public class LambdaActivity extends BaseActivity {
             @Override
             public void onClick(View view) {
                 Toast.makeText(LambdaActivity.this, "hello word!", Toast.LENGTH_SHORT);
+
+
+
             }
         });
         //lambda表达式使用之后

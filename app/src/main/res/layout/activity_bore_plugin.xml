@@ -4,16 +4,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.android.znh.worksave.priactice.LambdaActivity">
+    android:orientation="vertical"
+    tools:context="com.android.znh.worksave.priactice.plug.BorePlugin">
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/btn_lam_an"
-        android:text="按钮"/>
-    <Button
+        android:id="@+id/btn_bore_send"
+        android:text="发送消息"
+        android:onClick="sendmessage"/>
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/btn_lam_antwo"
-        android:text="按钮"/>
+        android:id="@+id/tv_bore_showm"
+        android:text="显示消息"/>
+
 </LinearLayout>
