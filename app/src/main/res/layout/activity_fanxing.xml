@@ -5,24 +5,22 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.android.znh.worksave.MainActivity">
-
-
-    <Button
-        android:id="@+id/btn_main_lam"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="RxJava" />
+    tools:context="com.android.znh.worksave.priactice.fanxing.FanxingActivity">
 
     <Button
-        android:id="@+id/btn_main_Retrofit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Retrofit网络测试" />
+        android:text="显示toast-string"
+        android:id="@+id/btn_fanxing_sshow"/>
     <Button
-        android:id="@+id/btn_main_fanxing"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="泛型测试" />
+        android:text="显示toast-int"
+        android:id="@+id/btn_fanxing_ishow"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="显示toast-boolean"
+        android:id="@+id/btn_fanxing_bshow"/>
 
 </LinearLayout>
