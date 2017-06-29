@@ -407,9 +407,9 @@ public class StringUtils {
     /**
      * 把金额转成大写
      */
-    public static String formatMoney(float price) {
-        return cn.sunlandgroup.tools.Money.toString(price);
-    }
+//    public static String formatMoney(float price) {
+//        return cn.sunlandgroup.tools.Money.toString(price);
+//    }
 
     /**
      * 判断指定的时间是否晚于当前时间
@@ -440,26 +440,26 @@ public class StringUtils {
         if (isEmpty(data))
             return null;
         else
-            return Base64.decode(data, Base64.DEFAULT);
+            return android.util.Base64.decode(data, Base64.DEFAULT);
     }
 
     /**
-     * 将指定的二进制字节流按特殊base64进行编码
+     * 将指定的二进制字节流按base64进行编码
      */
     public static String encodeBase64X(byte[] data) {
         if (data != null && data.length > 0)
-            return cn.sunlandgroup.tools.Encode.base64EncodeX(data);
+            return android.util.Base64.decode(data, Base64.DEFAULT).toString();
         return "";
     }
 
     /**
      * 获取指定的二进制字节流的哈希(SHA-1)码
      */
-    public static String getSha(byte[] data) {
-        if (data != null && data.length > 0)
-            return cn.sunlandgroup.tools.Security.SHA(data);
-        return "";
-    }
+//    public static String getSha(byte[] data) {
+//        if (data != null && data.length > 0)
+//            return cn.sunlandgroup.tools.Security.SHA(data);
+//        return "";
+//    }
 
     /**
      * 将指定的值转换成int型，并以指定的格式返回

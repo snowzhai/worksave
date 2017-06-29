@@ -8,6 +8,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Debug;
 import android.os.Environment;
 import android.os.StatFs;
 import android.telephony.TelephonyManager;
@@ -30,13 +31,39 @@ import java.util.List;
 
 
 /**
- * Created by zhai on 2016/6/2.
+ * 系统类中相关内容：
+ *
+ * 1.检测网络是否可用
+ * 2.手机是否root
+ * 3.当前版本的 版本号
+ * 4.得到当前版本的版本名称
+ * 5.获取android系统版本号 获得android系统sdk版本号
+ * 6.获取手机型号
+ * 7.获取设备的IMEI  取得当前sim手机卡的imsi
+ * 8.检测手机是否已插入SIM卡
+ * 9.sim卡是否可读
+ * 10.返回本地手机号码，这个号码不一定能获取到
+ * 11.返回手机服务商名字
+ * 12.获取当前设备的SN
+ * 13.获取当前设备的MAC地址
+ * 14.获得设备ip地址
+ * 15.获取屏幕的分辨率
+ * 16.获得设备的横向dpi  获得设备的纵向dpi
+ * 17.获取设备信息
+ * 18.判断手机CPU是否支持NEON指令集
+ * 19.读取CPU信息文件，获取CPU信息
+ * 20.获取当前设备cpu的型号  匹配当前设备的cpu型号  获取CPU核心数  获取CPU核心数
+ * 21.获取Rom版本
+ * 22.获取系统配置参数
+ * 23.判断SDCard是否可用
+ * 24.获取SD卡路径  获取SD卡的剩余容量,单位byte  获取指定路径所在空间的剩余可用容量字节数，单位byte
+ * 25.获取系统存储路径
+ * 25.获取手机剩余内存  手机低内存运行阀值，单位为byte  手机是否处于低内存运行
  */
 public class SystemUtils {
 
     /**
      * 检测网络是否可用
-     *
      * @param context
      * @return
      */
@@ -67,12 +94,18 @@ public class SystemUtils {
         return bool;
     }
 
-    //得到当前版本的 版本号
-    public static int getVersionCode(Context context) {
+
+    /**
+     *
+     * @param context
+     * @param packagemame  完整包名
+     * @return      当前版本的 版本号
+     */
+    public static int getVersionCode(Context context,String packagemame) {
         int ret = 0;
         if (context != null) {
             try {
-                PackageInfo packageInfo = context.getPackageManager().getPackageInfo("com.witcool.pad", PackageManager.GET_CONFIGURATIONS);
+                PackageInfo packageInfo = context.getPackageManager().getPackageInfo(packagemame, PackageManager.GET_CONFIGURATIONS);
                 ret = packageInfo.versionCode;
             } catch (PackageManager.NameNotFoundException e) {
                 e.printStackTrace();
@@ -82,7 +115,7 @@ public class SystemUtils {
     }
 
     //得到当前版本的版本名称
-    public static String getVersionName(Context context) {
+    public static String getVersionName(Context context,String packagemame) {
         String ret = null;
         if (context != null) {
             try {
@@ -464,43 +497,77 @@ public class SystemUtils {
     }
 
     /**
-     * 获取手机外部可用空间大小，单位为byte
-     * 外部sd卡大小
+     * 判断SDCard是否可用
+     *
+     * @return
      */
-//    @SuppressWarnings("deprecation")
-//    public static long getExternalTotalSpace() {
-//        long totalSpace = -1L;
-//        if (FileUtils.isSDCardAvailable()) {
-//            try {
-//                String path = Environment.getExternalStorageDirectory().getPath();// 获取外部存储目录即 SDCard
-//                StatFs stat = new StatFs(path);
-//                long blockSize = stat.getBlockSize();
-//                long totalBlocks = stat.getBlockCount();
-//                totalSpace = totalBlocks * blockSize;
-//            } catch (Exception e) {
-//                LogUtils.e(e);
-//            }
-//        }
-//        return totalSpace;
-//    }
+    public static boolean isSDCardEnable()
+    {
+        return Environment.getExternalStorageState().equals(
+                Environment.MEDIA_MOUNTED);
+
+    }
 
     /**
-     * 获取外部存储可用空间，单位为byte
+     * 获取SD卡路径
+     *
+     * @return
      */
-//    @SuppressWarnings("deprecation")
-//    public static long getExternalSpace() {
-//        long availableSpace = -1L;
-//        if (FileUtils.isSDCardAvailable()) {
-//            try {
-//                String path = Environment.getExternalStorageDirectory().getPath();
-//                StatFs stat = new StatFs(path);
-//                availableSpace = stat.getAvailableBlocks() * (long) stat.getBlockSize();
-//            } catch (Exception e) {
-//                LogUtils.e(e);
-//            }
-//        }
-//        return availableSpace;
-//    }
+    public static String getSDCardPath()
+    {
+        return Environment.getExternalStorageDirectory().getAbsolutePath()
+                + File.separator;
+    }
+    /**
+     * 获取SD卡的剩余容量 单位byte
+     *
+     * @return
+     */
+    public static long getSDCardAllSize()
+    {
+        if (isSDCardEnable())
+        {
+            StatFs stat = new StatFs(getSDCardPath());
+            // 获取空闲的数据块的数量
+            long availableBlocks = (long) stat.getAvailableBlocks() - 4;
+            // 获取单个数据块的大小（byte）
+            long freeBlocks = stat.getAvailableBlocks();
+            return freeBlocks * availableBlocks;
+        }
+        return 0;
+    }
+
+    /**
+     * 获取指定路径所在空间的剩余可用容量字节数，单位byte
+     *
+     * @param filePath
+     * @return 容量字节 SDCard可用空间，内部存储可用空间
+     */
+    public static long getFreeBytes(String filePath)
+    {
+        // 如果是sd卡的下的路径，则获取sd卡可用容量
+        if (filePath.startsWith(getSDCardPath()))
+        {
+            filePath = getSDCardPath();
+        } else
+        {// 如果是内部存储的路径，则获取内存存储的可用容量
+            filePath = Environment.getDataDirectory().getAbsolutePath();
+        }
+        StatFs stat = new StatFs(filePath);
+        long availableBlocks = (long) stat.getAvailableBlocks() - 4;
+        return stat.getBlockSize() * availableBlocks;
+    }
+
+    /**
+     * 获取系统存储路径
+     *
+     * @return
+     */
+    public static String getRootDirectoryPath()
+    {
+        return Environment.getRootDirectory().getAbsolutePath();
+    }
+
 
     /**
      * 获取手机内部空间大小，单位为byte
@@ -559,26 +626,26 @@ public class SystemUtils {
     /**
      * 获取指定包名应用占用的内存，单位为byte
      */
-//    public static long getUsedMemory(String packageName,Context context) {
-//        if (context == null) {
-//            return -1;
-//        }
-//        if (StringUtils.isEmpty(packageName)) {
-//            packageName = context.getPackageName();
-//        }
-//        long size = 0;
-//        ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-//        List<ActivityManager.RunningAppProcessInfo> runapps = activityManager.getRunningAppProcesses();
-//        for (ActivityManager.RunningAppProcessInfo runapp : runapps) { // 遍历运行中的程序
-//            if (packageName.equals(runapp.processName)) {// 得到程序进程名，进程名一般就是包名，但有些程序的进程名并不对应一个包名
-//                // 返回指定PID程序的内存信息，可以传递多个PID，返回的也是数组型的信息
-//                Debug.MemoryInfo[] processMemoryInfo = activityManager.getProcessMemoryInfo(new int[]{runapp.pid});
-//                // 得到内存信息中已使用的内存，单位是K
-//                size = processMemoryInfo[0].getTotalPrivateDirty() * 1024;
-//            }
-//        }
-//        return size;
-//    }
+    public static long getUsedMemory(String packageName,Context context) {
+        if (context == null) {
+            return -1;
+        }
+        if (StringUtils.isEmpty(packageName)) {
+            packageName = context.getPackageName();
+        }
+        long size = 0;
+        ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningAppProcessInfo> runapps = activityManager.getRunningAppProcesses();
+        for (ActivityManager.RunningAppProcessInfo runapp : runapps) { // 遍历运行中的程序
+            if (packageName.equals(runapp.processName)) {// 得到程序进程名，进程名一般就是包名，但有些程序的进程名并不对应一个包名
+                // 返回指定PID程序的内存信息，可以传递多个PID，返回的也是数组型的信息
+                Debug.MemoryInfo[] processMemoryInfo = activityManager.getProcessMemoryInfo(new int[]{runapp.pid});
+                // 得到内存信息中已使用的内存，单位是K
+                size = processMemoryInfo[0].getTotalPrivateDirty() * 1024;
+            }
+        }
+        return size;
+    }
 
     /**
      * 获取手机剩余内存，单位为byte

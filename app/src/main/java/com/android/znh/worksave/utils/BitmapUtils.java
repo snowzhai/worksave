@@ -22,9 +22,6 @@ import java.util.Locale;
  */
 
 public class BitmapUtils {
-
-
-
     /**
      * 创建一个指定大小的缩略图（不回收原图资源）
      *
@@ -73,7 +70,7 @@ public class BitmapUtils {
             destHeight = height;
         if (destWidth > width)
             destWidth = width;
-
+        //ThumbnailUtils  用来实现图片的压缩操作
         if (autoRecycleSource)
             return ThumbnailUtils.extractThumbnail(source, destWidth, destHeight, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
         else
@@ -201,7 +198,7 @@ public class BitmapUtils {
             opt.inPreferredConfig = Bitmap.Config.RGB_565;//降低空间占用
 
             opt.inJustDecodeBounds = false;//开始解码
-            Bitmap bitmap = BitmapFactory.decodeFile(fileName, opt);
+            Bitmap bitmap = BitmapFactory.decodeFile(fileName, opt);//根据完整文件名获取一个bitmap
             if (degree != 0 && bitmap != null) {
                 Matrix matrix = new Matrix();
                 int w = bitmap.getWidth();
@@ -558,5 +555,36 @@ public class BitmapUtils {
             return (int) (pxValue / scale + 0.5f);
         else
             return (int) (pxValue / scale - 0.5f);
+    }
+
+    /**
+     * 将bitmap压缩成指定大小并返回字节数组
+     *
+     * @param bitmap 传入的bitmap
+     * @param size  单位：kb  指定的大小
+     * @return
+     */
+    public static byte[] bitmaptoString(Bitmap bitmap,int size) {
+        // 将Bitmap转换成字节
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 80, baos);//质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中
+        int options = 100;
+        while (baos.toByteArray().length / 1024 > size) { //循环判断如果压缩后图片是否大于100kb,大于继续压缩
+            baos.reset();//重置baos即清空baos
+            bitmap.compress(Bitmap.CompressFormat.JPEG, options, baos);//这里压缩options%，把压缩后的数据存放到baos中
+            options -= 10;//每次都减少10
+        }
+        byte[] bytes = baos.toByteArray();
+        return bytes;
+    }
+
+
+    /**
+     * 将传入的字节数组 变为bitmap
+     * @param array   传入的字节数组
+     * @return
+     */
+    public static Bitmap getBitmapFromByte(byte[] array) {
+        return  BitmapFactory.decodeByteArray(array, 0, array.length);
     }
 }
