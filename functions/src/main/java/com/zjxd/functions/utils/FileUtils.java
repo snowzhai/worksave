@@ -1,4 +1,4 @@
-package com.android.znh.worksave.utils;
+package com.zjxd.functions.utils;
 
 import android.content.Context;
 import android.text.TextUtils;
@@ -28,6 +28,24 @@ import java.util.zip.ZipFile;
 
 /**
  * 文件操作工具类
+ *
+ * 1.判断指定的文件（或目录）是否存在（完整路径文件名）
+ * 2.创建指定的目录
+ * 3.强制删除指定的目录
+ * 4.删除指定的文件
+ * 5.写文本文件
+ * 6.把数据写入到指定的文件中  将文件流写入到指定文件夹下的文件(覆盖原文件)
+ * 7.读取指定的文件数据
+ * 8.复制文件(覆盖原文件)
+ * 9.把Assets目录下的文件复制到指定的位置
+ * 10.获取指定目录（包括子目录）中的所有文件（返回完整路径的文件列表）  获取指定目录中的文件列表（包含子目录）
+ * 11.重新命名文件名
+ * 12.根据指定的完整路径文件名，获取无路径的文件名
+ * 13.获取文件的修改时间
+ * 14.获取指定文件的长度（文件大小、字节数）
+ * 15.解压ZIP文件(覆盖原文件)
+ * 16.在同一目录生成备份文件名（加bak后缀）
+ * 17.根据原文件和备份文件名，恢复原文件
  */
 public class FileUtils {
     /**
@@ -590,14 +608,14 @@ public class FileUtils {
     /**
      * 重新命名文件名
      *
-     * @param srcFilename  原文件名
-     * @param destFilename 新文件名
+     * @param oldFilename  原文件名
+     * @param newFilename 新文件名
      */
-    public static boolean rename(String srcFilename, String destFilename) {
-        if (!exists(srcFilename) || exists(destFilename))
+    public static boolean rename(String oldFilename, String newFilename) {
+        if (!exists(oldFilename) || exists(newFilename))
             return false;
-        File f = new File(srcFilename);
-        return f.renameTo(new File(destFilename));
+        File f = new File(oldFilename);
+        return f.renameTo(new File(newFilename));
     }
 
     /**

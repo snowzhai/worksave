@@ -1,4 +1,4 @@
-package com.android.znh.worksave.utils;
+package com.zjxd.functions.utils;
 
 import android.content.Context;
 import android.graphics.Bitmap;

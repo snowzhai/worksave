@@ -1,4 +1,4 @@
-package com.android.znh.worksave.utils;
+package com.zjxd.functions.utils;
 
 import android.app.Activity;
 import android.content.Context;
@@ -27,7 +27,7 @@ import android.widget.Toast;
 public class ShowUtils {
     public static boolean isDebug = true;// 是否需要打印bug，可以在application的onCreate函数里面初始化
     public static boolean isShow = true;//toast是否显示
-    private static final String TAG = "way";
+    private static final String TAG = "worksave";
 
     // 下面四个是默认tag的函数
     public static void i(String msg)
@@ -157,12 +157,10 @@ public class ShowUtils {
 
 
     /**
-     * 打卡软键盘
+     * 打开软键盘
      *
-     * @param mEditText
-     *            输入框
-     * @param mContext
-     *            上下文
+     * @param mEditText  输入框
+     * @param mContext   上下文
      */
     public static void openKeybord(EditText mEditText, Context mContext)
     {

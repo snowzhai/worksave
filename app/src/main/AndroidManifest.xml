@@ -23,7 +23,7 @@
         </activity>
         <activity android:name=".priactice.LambdaActivity" />
         <activity android:name=".priactice.RxJavaActivity" />
-        <activity android:name=".BaseActivity" />
+        <activity android:name="com.zjxd.functions.base.BaseActivity" />
         <activity android:name=".priactice.Retrofit.RetrofitActivity" />
         <activity android:name=".priactice.plug.BorePlugin" />
         <activity android:name=".priactice.fanxing.FanxingActivity"></activity>
