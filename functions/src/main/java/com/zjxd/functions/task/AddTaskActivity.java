@@ -20,6 +20,7 @@ import com.zjxd.functions.Global;
 import com.zjxd.functions.R;
 import com.zjxd.functions.base.BaseActivity;
 import com.zjxd.functions.task.help.mSqliteHelp;
+import com.zjxd.functions.task.service.MyService;
 import com.zjxd.functions.utils.ShowUtils;
 import com.zjxd.functions.utils.StringUtils;
 
@@ -28,7 +29,9 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
-
+/*
+* 添加任务 功能主界面
+* */
 public class AddTaskActivity extends BaseActivity implements View.OnClickListener {
 
     private TextView tvTime;
@@ -70,7 +73,8 @@ public class AddTaskActivity extends BaseActivity implements View.OnClickListene
             ShowUtils.i("显示数据",getstaskdata.toString());
             setdata();
         }
-
+        Intent service=new Intent(this, MyService.class);
+        startService(service);
     }
 
 
