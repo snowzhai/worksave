@@ -78,7 +78,7 @@ public class MyService extends Service {
         @Override
         public void onReceive(Context context, Intent intent) {
             if(intent.ACTION_TIME_TICK.equals(intent.getAction())){
-                ShowUtils.i("wordsave"," 时间变化了22223333444445555666666667777");
+                ShowUtils.i("wordsave"," 时间变化了2222333344444555566666666777788888");
                 mHelp = new mSqliteHelp(context);
                 data = mHelp.queryTask(StringUtils.formatDateNow("yyyyMMdd"),1,2);
                 ShowNotifition(context,data.length);
