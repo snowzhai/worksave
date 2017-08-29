@@ -188,19 +188,15 @@ public class SharePreferenceUtils
 		 */
 		public static void apply(SharedPreferences.Editor editor)
 		{
-			try
-			{
-				if (sApplyMethod != null)
-				{
+			try {
+				if (sApplyMethod != null) {
 					sApplyMethod.invoke(editor);
 					return;
 				}
-			} catch (IllegalArgumentException e)
-			{
-			} catch (IllegalAccessException e)
-			{
-			} catch (InvocationTargetException e)
-			{
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
 			}
 			editor.commit();
 		}

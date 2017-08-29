@@ -29,21 +29,21 @@ public class MyService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        ShowUtils.i("wordsave"," onCreate");
+        ShowUtils.i("wordsave", " onCreate");
         createBrocastReceive();
     }
 
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        ShowUtils.i("wordsave"," onBind");
+        ShowUtils.i("wordsave", " onBind");
 
         return null;
     }
 
     @Override
-    public int onStartCommand(Intent intent,  int flags, int startId) {
-        ShowUtils.i("wordsave"," onStartCommand");
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        ShowUtils.i("wordsave", " onStartCommand");
 
         new Thread(new Runnable() {
 
@@ -60,7 +60,7 @@ public class MyService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        ShowUtils.i("wordsave"," onDestroy");
+        ShowUtils.i("wordsave", " onDestroy");
     }
 
     private void createBrocastReceive() {
@@ -77,28 +77,30 @@ public class MyService extends Service {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            if(intent.ACTION_TIME_TICK.equals(intent.getAction())){
-                ShowUtils.i("wordsave"," 时间变化了");
+            if (intent.ACTION_TIME_TICK.equals(intent.getAction())) {
+                ShowUtils.i("wordsave", " 时间变化了");
                 mHelp = new mSqliteHelp(context);
-                data = mHelp.queryTask(StringUtils.formatDateNow("yyyyMMdd"),1,2);
-                ShowNotifition(context,data.length);
+                data = mHelp.queryTask(StringUtils.formatDateNow("yyyyMMdd"), 1, 2);
+                ShowNotifition(context, data.length);
 
             }
         }
 
-        private void ShowNotifition(Context context,int number) {
+        private void ShowNotifition(Context context, int number) {
             Intent notificationIntent = new Intent(context, TaskFragment.class);
             PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
-            Notification noti = new Notification.Builder(context)
-                    .setContentTitle("还有"+number+"个重要的任务没有完成。")
-                    .setContentText("Message")
-                    .setSmallIcon(R.drawable.ic_launcher)
-                    .setContentIntent(pendingIntent)
-                    .setLights(0xffff0000,0,2000)
-                    .setVibrate(new long[]{0,1000,0,1000})
-                    .setSound( RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-                    .build();
-            startForeground(12346, noti);
+            if (number > 0) {
+                Notification noti = new Notification.Builder(context)
+                        .setContentTitle("还有" + number + "个重要的任务没有完成。")
+                        .setContentText("Message")
+                        .setSmallIcon(R.drawable.ic_launcher)
+                        .setContentIntent(pendingIntent)
+                        .setLights(0xffff0000, 0, 2000)
+                        .setVibrate(new long[]{0, 1000, 0, 1000})
+                        .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                        .build();
+                startForeground(12346, noti);
+            }
         }
     };
 }

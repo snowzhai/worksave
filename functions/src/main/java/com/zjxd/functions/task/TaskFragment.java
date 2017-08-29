@@ -1,7 +1,6 @@
 package com.zjxd.functions.task;
 
 import android.app.AlertDialog;
-import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,6 +12,7 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import com.zjxd.functions.R;
+import com.zjxd.functions.base.BaseFragment;
 import com.zjxd.functions.task.adapter.TaskAdapter;
 import com.zjxd.functions.task.adapter.TaskAdapter.MyClickListener;
 import com.zjxd.functions.task.help.mSqliteHelp;
@@ -22,7 +22,7 @@ import com.zjxd.functions.utils.StringUtils;
 import static android.app.Activity.RESULT_OK;
 
 
-public class TaskFragment extends Fragment implements AdapterView.OnItemClickListener {
+public class TaskFragment extends BaseFragment implements AdapterView.OnItemClickListener {
 
     private View viewroot;
     private ListView lvTaskShow;
@@ -54,13 +54,7 @@ public class TaskFragment extends Fragment implements AdapterView.OnItemClickLis
                         .setPositiveButton("确认", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int il) {
-//                                deletedata(z);
-                                if (!mHelp.deleteTask(taskdatas[z].getId())) {
-                                    ShowUtils.showShort(getActivity(), "删除失败！请重新尝试");
-                                }else {
-                                    initdata();
-                                }
-
+                                deletedata(z);
                             }
                         }).setNegativeButton("取消",null).show();
 
@@ -73,7 +67,7 @@ public class TaskFragment extends Fragment implements AdapterView.OnItemClickLis
                 startActivityForResult(new Intent(getActivity(), AddTaskActivity.class), RESULTCODE);
             }
         });
-        initdata();
+        refreshView();
     }
 
     private void deletedata(int i) {
@@ -85,42 +79,30 @@ public class TaskFragment extends Fragment implements AdapterView.OnItemClickLis
                 if (!mHelp.deleteTask(taskdatas[ii].getId())) {
                     ShowUtils.showShort(getActivity(), "更新失败！请重新尝试");
                 }
-
-                //这儿是耗时操作，完成之后更新UI；
-                taskdatas = mHelp.queryTask(StringUtils.formatDateNow("yyyyMMdd"));
-
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        //更新UI
-                        taskAdapter = new TaskAdapter(getActivity(), taskdatas, mListener);
-                        lvTaskShow.setAdapter(taskAdapter);
-                        taskAdapter.notifyDataSetChanged();
-                    }
-                });
+                refreshView();
             }
         }.start();
     }
-
-    private void initdata() {
-        new Thread() {
+//    private void initdata() {
+//        new Thread() {
+//            public void run() {
+//                //这儿是耗时操作，完成之后更新UI；
+//                refreshView();
+//            }
+//        }.start();
+//    }
+    private void refreshView() {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
             public void run() {
                 //这儿是耗时操作，完成之后更新UI；
                 taskdatas = mHelp.queryTask(StringUtils.formatDateNow("yyyyMMdd"));
-
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        //更新UI
-                        taskAdapter = new TaskAdapter(getActivity(), taskdatas, mListener);
-                        lvTaskShow.setAdapter(taskAdapter);
-                        taskAdapter.notifyDataSetChanged();
-                    }
-                });
+                taskAdapter = new TaskAdapter(getActivity(), taskdatas, mListener);
+                lvTaskShow.setAdapter(taskAdapter);
+                taskAdapter.notifyDataSetChanged();
             }
-        }.start();
+        });
     }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -141,7 +123,7 @@ public class TaskFragment extends Fragment implements AdapterView.OnItemClickLis
     @Override
     public void onResume() {
         super.onResume();
-        initdata();
+        refreshView();
     }
 
 
@@ -158,7 +140,7 @@ public class TaskFragment extends Fragment implements AdapterView.OnItemClickLis
             if (!mHelp.updateTask(data, true)) {
                 ShowUtils.showShort(getActivity(), "更新失败！请重新尝试");
             } else {
-                initdata();
+                refreshView();
             }
         }
 
